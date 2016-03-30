@@ -19,6 +19,7 @@
 	    </div>
 	</nav>
 
+
     <div class="row">
      <div class="col s12 m4 12">
       <div class="card indigo darken-4">
@@ -27,7 +28,7 @@
          <div class="input-field col s12">
            <input type="text" id="noteTitle" placeholder="Note Title">
 <!--	    <input type="text" id="noteTask" placeholder="Note Description">-->
-	   <input type="text" id="completion" placeholder="Completed(YES or NO)">
+	   <input type="text" id="completion" placeholder="Is task done(YES or NO)">
 	<!--  <input type="submit" id='submitButton'>-->
          </div>
         </div>
@@ -36,44 +37,26 @@
      </div>
     </div>
 
-	<table class="centered" id="summary" overflow="auto">
-    	<thead>
-          <tr>
-              <th>Note Title</th>
-<!--              <th>Note Description</th>-->
-              <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-        
-        </tbody>
-    </table>
+<div id='messagesDiv'></div>
 
 	<script>
 var myDataRef = new Firebase('https://teard6qpmrk.firebaseio-demo.com/');
-      $('#completedInput').keypress(function (e) {//when the user completed all the input field and pressed enter
+      $('#completion').keypress(function (e) {//when the user finishe	d all the input field and pressed enter
         if (e.keyCode == 13) {
-          var name = $('#noteTitle').val();//get the name of the task
-          var completed = $('#completion').val();//get the info if the task is completed or not
-          myDataRef.push({name: name, completed: completed});//push the data to the firebase
+          var note = $('#noteTitle').val();//get the note of the task
+          var finished = $('#completion').val();//get the info if the task is finished or not
+          myDataRef.push({note: note, finished: finished});//insert date into firebase
           $('#completion').val('');
           $('#noteTitle').val('');
         }
       });
-      myDataRef.on('child_added', function(snapshot) {//function when a new task is added
+      myDataRef.on('child_added', function(snapshot) {//function that is used when new task is added
         var task = snapshot.val();
-        displayTasks(task.name, task.completed);//calls the function that displays all the tasks
+        displayTasks(task.note, task.finished);//calls the function that displays all the tasks
       });
-      function displayTasks(name, completed) {//function for displaying all the tasks by adding new row with the info of each task to the table
-      		var newRow = $("<tr/>");
-			newRow.append($("<td/>").append($("<em/>").text(name)));
-			if(completed=="yes"){
-				newRow.append($("<td/>").append("TASK DONE"));
-			}
-			else{
-				newRow.append($("<td/>").append("TASK TO BE DONE"));
-			}
-			$("#summary").append(newRow);
+      function displayTasks(note, finished) {//displays all task made
+      		$('<div/>').text(finished).prepend($('<em/>').text(note+': ')).appendTo($('#messagesDiv'));
+		$('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
 	</script>
 
